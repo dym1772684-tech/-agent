@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>全链路看板</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-2: #1f2937;
+      --muted: #94a3b8;
+      --line: #334155;
+      --green: #34d399;
+      --cyan: #22d3ee;
+      --amber: #fbbf24;
+      --red: #f87171;
+      --purple: #a78bfa;
+      --white: #e5e7eb;
+      --shadow: rgba(15, 23, 42, 0.45);
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      background: linear-gradient(135deg, #020817 0%, #0f172a 40%, #111827 100%);
+      color: var(--white);
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: 0.5px;
+    }
+
+    .badge {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(52, 211, 153, 0.12);
+      border: 1px solid rgba(52, 211, 153, 0.4);
+      color: var(--green);
+      font-weight: 600;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: rgba(17, 24, 39, 0.86);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: 0 12px 30px var(--shadow);
+      padding: 18px;
+    }
+
+    .card h3 {
+      margin: 0 0 12px;
+      font-size: 14px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .metric {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .panel {
+      display: grid;
+      grid-template-columns: 1.1fr 1.4fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .stack {
+      display: grid;
+      grid-template-rows: auto auto;
+      gap: 16px;
+    }
+
+    .input-group {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    input, textarea, select, button {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--white);
+      padding: 10px 12px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    button {
+      cursor: pointer;
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      color: #08111d;
+      border: none;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      opacity: 0.96;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .row > * { flex: 1; }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .status-ok { background: rgba(52, 211, 153, 0.12); color: var(--green); border: 1px solid rgba(52, 211, 153, 0.4); }
+    .status-bad { background: rgba(248, 113, 113, 0.12); color: var(--red); border: 1px solid rgba(248, 113, 113, 0.4); }
+    .status-warn { background: rgba(251, 191, 36, 0.12); color: var(--amber); border: 1px solid rgba(251, 191, 36, 0.4); }
+
+    .log-box, .result-box {
+      margin-top: 12px;
+      background: rgba(2, 6, 23, 0.85);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      color: var(--white);
+      min-height: 200px;
+      max-height: 360px;
+      overflow: auto;
+      white-space: pre-wrap;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .result-box {
+      min-height: 260px;
+    }
+
+    .small {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .list {
+      display: grid;
+      gap: 8px;
+      color: var(--white);
+      font-size: 13px;
+    }
+
+    .list-item {
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--line);
+    }
+
+    .mono {
+      font-family: Consolas, "Courier New", monospace;
+    }
+
+    @media (max-width: 980px) {
+      .grid { grid-template-columns: repeat(2, minmax(220px, 1fr)); }
+      .panel, .two-col { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>养老智能体全链路看板</h1>
+      <div class="badge" id="overallBadge">系统状态：检测中...</div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h3>Agent 接线</h3>
+        <div class="metric" id="agentReady">--</div>
+        <div class="note">/api/v1/agent/status</div>
+      </div>
+      <div class="card">
+        <h3>已注册工具</h3>
+        <div class="metric" id="toolCount">--</div>
+        <div class="note">自定义工具 + 后端工具</div>
+      </div>
+      <div class="card">
+        <h3>当前线程</h3>
+        <div class="metric mono" id="threadId">--</div>
+        <div class="note">session / thread_id</div>
+      </div>
+      <div class="card">
+        <h3>接口状态</h3>
+        <div class="metric" id="httpStatus">--</div>
+        <div class="note">FastAPI health</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="stack">
+        <div class="card">
+          <h3>1. 认证与用户</h3>
+          <div class="input-group">
+            <input id="username" placeholder="username" value="admin" />
+            <input id="password" type="password" placeholder="password" value="123456" />
+            <div class="row">
+              <button id="registerBtn">注册</button>
+              <button id="loginBtn">登录</button>
+            </div>
+            <div class="small">注册 / 登录 接口由 FastAPI 提供</div>
+          </div>
+          <div id="authLog" class="log-box"></div>
+        </div>
+
+        <div class="card">
+          <h3>2. 智能体聊天</h3>
+          <div class="input-group">
+            <input id="elderId" placeholder="elder_id（可选）" />
+            <input id="threadIdInput" placeholder="thread_id（可选）" />
+            <textarea id="question" placeholder="输入你想问的养老场景问题...">请帮我评估这位老人是否需要关注健康风险，并给出一个7天计划。</textarea>
+            <div class="row">
+              <button id="chatBtn">调用 Agent</button>
+              <button id="statusBtn">查看状态</button>
+            </div>
+          </div>
+          <div id="chatLog" class="log-box"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>3. 运行状态与 trace</h3>
+        <div class="small">响应结构会展示最终 answer、structured 字段与 debug trace</div>
+        <div id="resultBox" class="result-box"></div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <h3>链路节点</h3>
+        <div class="list">
+          <div class="list-item">1. FastAPI /api/v1/agent/chat</div>
+          <div class="list-item">2. agent_bridge.bootstrap() 载入 allagent2</div>
+          <div class="list-item">3. inject backend tools</div>
+          <div class="list-item">4. make_graph().compile()</div>
+          <div class="list-item">5. parser_model 结构化解析</div>
+          <div class="list-item">6. check_rag / first_llm_call / tool_use</div>
+          <div class="list-item">7. 最终 answer + structured 输出</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>后端状态快照</h3>
+        <div id="snapshot" class="log-box"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const BASE = 'http://127.0.0.1:8000';
+    const state = {
+      token: '',
+      threadId: ''
+    };
+
+    function setBadge(text, kind = 'ok') {
+      const el = document.getElementById('overallBadge');
+      el.textContent = text;
+      el.className = 'badge ' + (kind === 'ok' ? 'status-ok' : kind === 'bad' ? 'status-bad' : 'status-warn');
+    }
+
+    function logTo(elId, text, isError = false) {
+      const el = document.getElementById(elId);
+      el.innerHTML = text;
+      if (isError) {
+        el.style.borderColor = '#f87171';
+      } else {
+        el.style.borderColor = '#334155';
+      }
+    }
+
+    function prettyJson(obj) {
+      return JSON.stringify(obj, null, 2);
+    }
+
+    async function fetchJson(url, options = {}) {
+      // 【修复】headers 合并顺序 bug：原代码 options 在 headers 之后展开，
+      // 一旦调用方传入 headers（如 Authorization），会把 Content-Type 整个覆盖掉，
+      // 后端收不到 application/json 就按文本解析 body → 422（显示 [object Object]）。
+      // 现在 headers 放最后，始终保留 Content-Type。
+      const res = await fetch(url, {
+        ...options,
+        headers: { ...(options.headers || {}), 'Content-Type': 'application/json' },
+      });
+      const text = await res.text();
+      try {
+        return { ok: res.ok, status: res.status, data: JSON.parse(text) };
+      } catch {
+        return { ok: res.ok, status: res.status, data: text };
+      }
+    }
+
+    async function loadStatus() {
+      try {
+        const r = await fetchJson(`${BASE}/api/v1/agent/status`);
+        const ready = !!(r.data && r.data.ready);
+        document.getElementById('agentReady').textContent = ready ? 'READY' : 'NOT READY';
+        document.getElementById('toolCount').textContent = r.data && r.data.tools_count ? String(r.data.tools_count) : '0';
+        document.getElementById('snapshot').textContent = prettyJson(r.data || {});
+        if (ready) {
+          setBadge('系统状态：Agent 已接通', 'ok');
+          document.getElementById('httpStatus').textContent = 'OK';
+        } else {
+          setBadge('系统状态：Agent 未就绪', 'bad');
+          document.getElementById('httpStatus').textContent = 'ERR';
+        }
+      } catch (e) {
+        document.getElementById('agentReady').textContent = 'ERROR';
+        document.getElementById('snapshot').textContent = String(e);
+        setBadge('系统状态：连接失败', 'bad');
+        document.getElementById('httpStatus').textContent = 'ERR';
+      }
+    }
+
+    async function registerUser() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const payload = { username, password, role: 'common' };
+      const result = await fetchJson(`${BASE}/api/v1/register`, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      logTo('authLog', prettyJson(result));
+      if (result.ok) {
+        setBadge('用户注册成功', 'warn');
+      }
+    }
+
+    async function loginUser() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const payload = { username, password };
+      const result = await fetchJson(`${BASE}/api/v1/login`, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      logTo('authLog', prettyJson(result));
+      if (result.ok && result.data && result.data.access_token) {
+        state.token = result.data.access_token;
+        setBadge('认证通过，已获取 token', 'ok');
+      }
+    }
+
+    async function chatWithAgent() {
+      // 【修复】/agent/chat 已加 JWT 鉴权：必须先登录拿到 token，
+      // 请求必须携带 Authorization: Bearer <token>，否则后端返回 401 Not authenticated
+      if (!state.token) {
+        logTo('chatLog', '请先点击「登录」获取 token，再调用 Agent', true);
+        return;
+      }
+      const payload = {
+        message: document.getElementById('question').value,
+        elder_id: document.getElementById('elderId').value || undefined,
+        thread_id: document.getElementById('threadIdInput').value || undefined,
+        debug: true
+      };
+
+      logTo('chatLog', '请求中...');
+      const result = await fetchJson(`${BASE}/api/v1/agent/chat`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${state.token}` },
+        body: JSON.stringify(payload)
+      });
+
+      if (result.ok) {
+        const data = result.data && result.data.data ? result.data.data : result.data;
+        state.threadId = data.thread_id || state.threadId || 'current';
+        document.getElementById('threadId').textContent = state.threadId;
+        document.getElementById('threadIdInput').value = state.threadId;
+        document.getElementById('resultBox').textContent = prettyJson(data);
+        logTo('chatLog', `请求成功\n${prettyJson(data)}`);
+      } else {
+        // 【修复】错误信息可读化：FastAPI 422 的 detail 是对象数组，
+        // 直接拼接会显示 "[object Object]"，这里逐条提取 msg 拼成文本
+        let msg;
+        if (result.data && Array.isArray(result.data.detail)) {
+          msg = result.data.detail.map(d => d && d.msg ? d.msg : JSON.stringify(d)).join('；');
+        } else if (result.data && result.data.detail) {
+          msg = result.data.detail;
+        } else {
+          msg = prettyJson(result.data || {});
+        }
+        logTo('chatLog', `请求失败\n${msg}`, true);
+        document.getElementById('resultBox').textContent = msg;
+      }
+    }
+
+    async function statusBtnClick() {
+      await loadStatus();
+    }
+
+    document.getElementById('registerBtn').addEventListener('click', registerUser);
+    document.getElementById('loginBtn').addEventListener('click', loginUser);
+    document.getElementById('chatBtn').addEventListener('click', chatWithAgent);
+    document.getElementById('statusBtn').addEventListener('click', statusBtnClick);
+
+    loadStatus();
+  </script>
+</body>
+</html>

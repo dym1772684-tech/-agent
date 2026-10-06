@@ -1,0 +1,7 @@
+E:\python\Lib\site-packages\jieba\_compat.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+2026-10-05 12:45:14 INFO [agent] 创建 parser model，api_key present=True, base_url=https://api.deepseek.com/v1
+2026-10-05 12:45:17 INFO [agent] parser model 创建完成
+2026-10-05 12:45:17 INFO [agent] 创建 tool model，api_key present=True, base_url=https://api.deepseek.com/v1
+2026-10-05 12:45:18 INFO [agent] tool model 创建完成
+ERROR:    [Errno 10048] error while attempting to bind on address ('127.0.0.1', 8000): [winerror 10048] 通常每个套接字地址(协议/网络地址/端口)只允许使用一次。

@@ -1,0 +1,39 @@
+# ============================================================
+# 养老智能体 集成依赖清单（fastap2 + allagent2 串联后所需）
+# 安装： E:\python\python.exe -m pip install -r requirements.txt
+# ============================================================
+
+# ---- FastAPI / Web 层 ----
+fastapi
+uvicorn[standard]
+python-multipart          # OAuth2PasswordRequestForm 表单解析需要
+
+# ---- 数据库 ----
+sqlalchemy
+aiomysql                  # FastAPI 异步连接 MySQL
+pymysql                   # Agent 后端工具的同步连接（aiomysql 也依赖它）
+
+# ---- 鉴权 / 配置 / 数据校验 ----
+pydantic
+pyjwt                     # import jwt
+passlib                   # 密码哈希
+bcrypt
+python-dotenv             # import dotenv，加载 .env
+
+# ---- LangChain / LangGraph 全家桶（Agent 大脑）----
+langchain
+langchain-core
+langchain-community
+langgraph
+openai                    # deepseek 走 OpenAI 兼容接口
+
+# ---- RAG 检索（allagent2/rag）----
+sentence-transformers     # embedding 模型
+transformers
+chromadb                  # 向量库（EphemeralClient）
+jieba                     # 中文分词 / BM25
+# pymilvus                 # 仅 rag/data.py 的 Milvus 独立 demo 需要，按需打开
+
+# ---- 其它 ----
+requests                  # 天气工具 HTTP 调用
+redis                     # database/redistest.py 需要
