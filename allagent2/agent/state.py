@@ -82,9 +82,6 @@ class ParsedOutput(BaseModel):
     query: Optional[QueryPlan] = None
     next_need: Optional[NextNeed] = None
     answer: Optional[str] = Field(default=None, description="最终回复正文")
-
-    # ---- 养生养老业务字段（已删除原旅游字段：number_of_people / grade_for_site /
-    #      weather_for_7_days / strategy_for_user / hotel_for_user / sell_for_tourism） ----
     health_advice: Optional[str] = Field(default=None, description="养生建议（作息/情志/日常调护）")
     diet_advice: Optional[str] = Field(default=None, description="饮食建议（食疗/忌口/营养）")
     exercise_advice: Optional[str] = Field(default=None, description="运动建议（适合老人的运动方式与强度）")
